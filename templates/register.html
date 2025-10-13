@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block head %}Task 1{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="/static/Css/register.css">
+<div class="register-container">
+    <h2>Register</h2>
+    <form method="POST" action="{{ url_for('register') }}">
+        <input type="text" id="username" name="username" placeholder="Name" required>
+        <input type="email" id="email" name="email" placeholder="Email" title="Email" required>
+        <input type="text" id="phone" name="phone" placeholder="Phone Number" required>
+        <label for="dob">D.O.B</label>
+        <input type="date" id="dob" name="dob" placeholder="Date of Birth" required>
+        <input type="text" id="address" name="address" placeholder="Address" required>
+        <input type="password" id="password" name="password" placeholder="Password" required>
+
+        <label for="role">Select Role</label>
+        <select id="role" name="role" required>
+            <option value="student">Student</option>
+            <option value="tutor">Tutor</option>
+            <option value="admin">Admin</option>
+        </select>
+
+        <div id="parent-email-container" {% if not show_parent_email %}style="display: none;"{% endif %}>
+            <input type="email" id="parent_email" name="parent_email" placeholder="Parent Email" required>
+        </div>
+
+
+        <button type="submit">Register</button>
+    </form>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+</div>
+<script src="/static/Js/register.js"></script>
+{% endblock %}

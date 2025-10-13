@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block head %}Task 1{% endblock %}</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="/static/Css/style.css">
+</head>
+
+<body>
+  <header class="header-container">
+    <div class="logo">
+      <img src="/static/Images/image.png" alt="GibJohn Logo">
+      <div class="logo-text">
+        <h1>GibJohn Tutoring</h1>
+        <p>Where Potential Meets Guidance.</p>
+      </div>
+    </div>
+
+    <nav class="navigation">
+      <ul>
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('about') }}">About</a></li>
+        <li><a href="{{ url_for('courses') }}">Courses</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        <li><a href="{{ url_for('login') }}">Login</a></li>
+        <li><a href="{{ url_for('register') }}">Register</a></li>
+        <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+        <li><a href="{{ url_for('assignments') }}">Assignments</a></li>
+        <li><a href="{{ url_for('progress') }}">Progress</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    {% block body %}
+    {% endblock %}
+  </main>
+
+  <footer>
+    <div class="footer-text">
+        <p>&copy; 2025 GibJohn. All rights reserved.</p>
+    <p>Where Potential Meets Guidance.</p>
+    <p>
+      <a href="{{ url_for('privacy_policy') }}">Privacy</a> |
+      <a href="{{ url_for('privacy_policy') }}">Terms</a> |
+      <a href="{{ url_for('privacy_policy') }}">Cookies</a>
+    </p>
+    </div>
+    
+  </footer>
+
+</html>

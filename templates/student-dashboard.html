@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block head %}Task 1{% endblock %}
+
+{% block body %}
+<!-- Add your page-specific HTML here -->
+<div class="main-container">
+    <div class="left">
+        <div class="left-text">
+            <h1>E-Learnimg <br> Education Platform </h1>
+        </div>
+        <div class="left-buttons">
+            <a href="{{url_for('register')}}" class="btn btn-primary">Become a student</a>
+            <a href="{{url_for('register')}}" class="btn btn-secondary">Become a tutor</a>
+        </div>
+    </div>
+    <div class="right">
+        <img src="{{ url_for('static', filename='priscilla-du-preez-XkKCui44iM0-unsplash.jpg') }}" alt="Student Image">
+    </div>
+</div>
+
+{% endblock %}

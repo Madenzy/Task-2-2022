@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block head %}Task 1{% endblock %}
+
+{% block body %}
+<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+    
+<!-- Add your page-specific HTML here -->
+<style>
+    .main-container {
+        display: flex;
+        height: fit-content;
+    }
+
+    .left, .right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 0px;
+    }
+
+    .left {
+        background-color: #f0f0f0;
+        text-align: center;
+    }
+
+    .left-text h1 {
+        font-family: 'Itim', sans-serif;
+        font-size: 96px;
+        margin-bottom: 20px;
+        color: green;
+    }
+
+    .left-buttons .btn {
+        margin: 10px;
+        padding: 10px 20px;
+        font-size: 1.2em;
+        text-decoration: none;
+        color: white;
+        border-radius: 15px;
+    }
+    
+
+
+    .right img {
+        width: 100%;
+        height: auto;
+    }
+    button {
+        background: rgb(23, 165, 10);
+        border: none;
+        padding: 0;
+        font: inherit;
+        cursor: pointer;
+        outline: inherit;
+        height: 80px;
+        border-radius: 15px;
+
+    }
+</style>
+<div class="main-container">
+    <div class="left">
+        <div class="left-text">
+            <h1>E-Learning <br> Education Platform </h1>
+        </div>
+        <div class="left-buttons">
+            <button><a href="{{url_for('register')}}" class="btn btn-primary">Become a student</a></button>
+            <button><a href="{{url_for('register')}}" class="btn btn-secondary">Become a tutor</a></button>
+        </div>
+    </div>
+    <div class="right">
+        <img src="/static/Images/priscilla-du-preez-XkKCui44iM0-unsplash.jpg" alt="Student Image">
+    </div>
+</div>
+
+{% endblock %}

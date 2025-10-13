@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block head %}Contact Us{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="/static/Css/contact.css">
+<main class="contact-page">
+
+  <section class="faq">
+    <h2>Help and Contact</h2>
+    <h3>Frequently Asked Questions</h3>
+    <ul>
+      <li>➤ How do I reset my password?</li>
+      <li>➤ How do I register?</li>
+      <li>➤ How do I access my assignments?</li>
+    </ul>
+  </section>
+
+  <section class="contact-form-section">
+    <div class="contact-form">
+      <h2>Contact Us</h2>
+      <form method="POST" action="{{ url_for('contact') }}">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="text" name="subject" placeholder="Subject" required>
+        <textarea name="message" placeholder="Message" rows="5" required></textarea>
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="other-contact">
+    <h3>Other Ways to Reach Us</h3>
+    <p><strong>Email:</strong> support@gibjohn.ac.uk</p>
+    <p><strong>Phone:</strong> +44 082396542</p>
+    <p><strong>Office Hours:</strong> Mon – Fri, 9am–5pm</p>
+    <p>We usually respond within 24 hours</p>
+  </section>
+
+</main>
+{% endblock %}

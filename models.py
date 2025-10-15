@@ -16,6 +16,7 @@ class Student(db.Model):
     __tablename__ = 'student'
     StudentID = db.Column(db.Integer, primary_key=True)
     Name = db.Column(db.String(100))
+    Email = db.Column(db.String(100), unique=True, nullable=False)
     Address = db.Column(db.String(200))
     DOB = db.Column(db.Date)
     Password = db.Column(db.String(100))
@@ -143,3 +144,7 @@ class XP(db.Model):
     XPLevel = db.Column(db.Integer)
 
     student = db.relationship('Student', back_populates='xp')
+
+def password_hash(password):
+    # Placeholder for password hashing logic
+    return password  # Replace with actual hashing in production

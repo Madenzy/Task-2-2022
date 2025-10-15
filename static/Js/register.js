@@ -38,3 +38,22 @@ document.addEventListener("DOMContentLoaded", function () {
   dobInput.addEventListener("change", toggleParentEmail);
   roleSelect.addEventListener("change", toggleParentEmail);
 });
+
+// Password confirmation validation
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("register-form");
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirm_password");
+  const errorContainer = document.getElementById("error-container");
+
+  form.addEventListener("submit", function (event) {
+    if (passwordInput.value !== confirmPasswordInput.value) {
+      event.preventDefault(); // Prevent form submission
+      errorContainer.textContent = "Passwords do not match.";
+      errorContainer.style.display = "block";
+      confirmPasswordInput.focus();
+    } else {
+      errorContainer.style.display = "none"; // Clear error if passwords match
+    }
+  });
+});

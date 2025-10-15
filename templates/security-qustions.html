@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div>
+<h1>Security Questions Management</h1>
+<p>Welcome to the security questions management panel. Here you can add, edit, or remove security questions used for user authentication.</p>
+<!-- Add your security questions management interface here -->  
+ <form method="POST" action="{{ url_for('add_security_question') }}">
+    <div class="form-group">
+        <label for="question">New Security Question:</label>
+        <input type="text" class="form-control" id="question" name="question" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Question</button>
+</div>
+{% endblock %}

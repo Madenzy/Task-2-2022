@@ -8,11 +8,6 @@ from models import db, Student, Tutor, Parent
 from flask_login import login_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-
-
-
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SECRET_KEY'] = 'your_secret_key'
@@ -142,14 +137,10 @@ def register():
         if role == 'student' and age < 18 and not parent_email:
             flash('Parent email is required for students under 18.', 'danger')
             return render_template('register.html', error='Parent email is required for students under 18.',show_parent_email=True)
-
+        #validate age for tutor
         if role == 'tutor' and age < 18:
             flash('Tutors must be at least 18 years old.', 'danger')
             return render_template('register.html', error='Tutors must be at least 18 years old.')
-
-        if role == 'admin' and age < 18:
-            flash('Admins must be at least 18 years old.', 'danger')
-            return render_template('register.html', error='Admins must be at least 18 years old.')
 
         # --- check for existing email ---
         if role == 'student' and Student.query.filter_by(Email=email).first():
@@ -160,11 +151,8 @@ def register():
             flash('Email already registered as a tutor.', 'danger')
             return render_template('register.html', error='Email already registered as a tutor.')
 
-        if role == 'admin' and Admins.query.filter_by(Email=email).first():
-            flash('Email already registered as an admin.', 'danger')
-            return render_template('register.html', error='Email already registered as an admin.')
 
-        # ==================== STUDENT REGISTRATION ====================
+        # ---- STUDENT REGISTRATION ----
         if role == 'student':
             # --- assign StudentID ---
             last_student = Student.query.order_by(Student.StudentID.desc()).first()
@@ -202,7 +190,7 @@ def register():
             flash('Student registered successfully!', 'success')
             return redirect(url_for('login'))
 
-        # ==================== TUTOR REGISTRATION ====================
+        # ---- TUTOR REGISTRATION----
         elif role == 'tutor':
             last_tutor = Tutor.query.order_by(Tutor.TutorID.desc()).first()
             next_tutor_id = 101001 if not last_tutor else last_tutor.TutorID + 1
@@ -222,24 +210,7 @@ def register():
             flash('Tutor registered successfully!', 'success')
             return redirect(url_for('login'))
 
-        # ==================== ADMIN REGISTRATION ====================
-        elif role == 'admin':
-            last_admin = Admins.query.order_by(Admins.AdminID.desc()).first()
-            next_admin_id = 301001 if not last_admin else last_admin.AdminID + 1
-
-            new_admin = Admins(
-                AdminID=next_admin_id,
-                Name=username,
-                Email=email,
-                Address=address,
-                DOB=dob,
-                Password=password_hash
-            )
-            db.session.add(new_admin)
-            db.session.commit()
-
-            flash('Admin registered successfully!', 'success')
-            return redirect(url_for('login'))
+        
 
     # Default page (no parent email shown yet)
     return render_template('register.html', show_parent_email=False)

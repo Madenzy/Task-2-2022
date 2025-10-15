@@ -3,6 +3,14 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+class Admins(db.Model):
+    __tablename__ = 'admins'
+    AdminID = db.Column(db.Integer, primary_key=True)
+    Name = db.Column(db.String(100))
+    Address = db.Column(db.String(200))
+    DOB = db.Column(db.DateTime)
+    Password = db.Column(db.String(100))
+
 # ------------------ STUDENT ------------------
 class Student(db.Model):
     __tablename__ = 'student'

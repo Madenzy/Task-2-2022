@@ -1,57 +1,64 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from flask_login import UserMixin
+from datetime import datetime, date
 
 db = SQLAlchemy()
 
-class Admins(db.Model):
-    __tablename__ = 'admins'
-    AdminID = db.Column(db.Integer, primary_key=True)
-    Name = db.Column(db.String(100))
-    Address = db.Column(db.String(200))
-    DOB = db.Column(db.DateTime)
-    Password = db.Column(db.String(100))
+# ------------------ ACCOUNT RECOVERY ------------------
+class Account_Recovery(db.Model):
+    __tablename__ = 'account_recovery'
+    RecoveryID = db.Column(db.Integer, primary_key=True)
+    UserEmail = db.Column(db.String(100), nullable=False)
+    QuestionText = db.Column(db.String(255), nullable=False)
+    AnswerHash = db.Column(db.String(255), nullable=False)
 
 # ------------------ STUDENT ------------------
-class Student(db.Model):
+class Student(UserMixin, db.Model):
     __tablename__ = 'student'
     StudentID = db.Column(db.Integer, primary_key=True)
     Name = db.Column(db.String(100))
     Email = db.Column(db.String(100), unique=True, nullable=False)
     Address = db.Column(db.String(200))
     DOB = db.Column(db.Date)
-    Password = db.Column(db.String(100))
+    Password = db.Column(db.String(255))
     Phone = db.Column(db.String(20))
     ParentEmail = db.Column(db.String(100), db.ForeignKey('parent.ParentEmail'))
 
-    parent = db.relationship('Parent', back_populates='students', foreign_keys=[ParentEmail])
+    parent = db.relationship('Parent', back_populates='students')
     enrollments = db.relationship('Enrollment', back_populates='student')
     submissions = db.relationship('Submission', back_populates='student')
     progresses = db.relationship('Progress', back_populates='student')
     xp = db.relationship('XP', back_populates='student', uselist=False)
-    learning = db.relationship('Learning', back_populates='student')
 
+    # Flask-Login required
+    def get_id(self):
+        return f"student-{self.StudentID}"
 
 # ------------------ PARENT ------------------
-class Parent(db.Model):
+class Parent(UserMixin, db.Model):
     __tablename__ = 'parent'
     ParentEmail = db.Column(db.String(100), primary_key=True)
-    Password = db.Column(db.String(100))
+    Password = db.Column(db.String(255))
 
-    students = db.relationship('Student', back_populates='parent', foreign_keys='Student.ParentEmail')
+    students = db.relationship('Student', back_populates='parent')
 
+    def get_id(self):
+        return f"parent-{self.ParentEmail}"
 
 # ------------------ TUTOR ------------------
-class Tutor(db.Model):
+class Tutor(UserMixin, db.Model):
     __tablename__ = 'tutor'
     TutorID = db.Column(db.Integer, primary_key=True)
     Name = db.Column(db.String(100))
+    Email = db.Column(db.String(100), unique=True, nullable=False)
     Address = db.Column(db.String(200))
-    DOB = db.Column(db.DateTime)
-    Password = db.Column(db.String(100))
+    DOB = db.Column(db.Date)
+    Password = db.Column(db.String(255))
 
-    # One tutor can teach many courses
-    courses = db.relationship('Course', back_populates='tutor', foreign_keys='Course.TutorID')
+    courses = db.relationship('Course', back_populates='tutor')
 
+    def get_id(self):
+        return f"tutor-{self.TutorID}"
 
 # ------------------ COURSE ------------------
 class Course(db.Model):
@@ -61,10 +68,9 @@ class Course(db.Model):
     Description = db.Column(db.String(255))
     TutorID = db.Column(db.Integer, db.ForeignKey('tutor.TutorID'))
 
-    tutor = db.relationship('Tutor', back_populates='courses', foreign_keys=[TutorID])
+    tutor = db.relationship('Tutor', back_populates='courses')
     enrollments = db.relationship('Enrollment', back_populates='course')
     assignments = db.relationship('Assignment', back_populates='course')
-
 
 # ------------------ ENROLLMENT ------------------
 class Enrollment(db.Model):
@@ -76,7 +82,6 @@ class Enrollment(db.Model):
 
     student = db.relationship('Student', back_populates='enrollments')
     course = db.relationship('Course', back_populates='enrollments')
-
 
 # ------------------ ASSIGNMENT ------------------
 class Assignment(db.Model):
@@ -90,7 +95,6 @@ class Assignment(db.Model):
     course = db.relationship('Course', back_populates='assignments')
     submissions = db.relationship('Submission', back_populates='assignment')
     progresses = db.relationship('Progress', back_populates='assignment')
-
 
 # ------------------ SUBMISSION ------------------
 class Submission(db.Model):
@@ -107,7 +111,6 @@ class Submission(db.Model):
     student = db.relationship('Student', back_populates='submissions')
     assignment = db.relationship('Assignment', back_populates='submissions')
     progresses = db.relationship('Progress', back_populates='submission')
-
 
 # ------------------ PROGRESS ------------------
 class Progress(db.Model):
@@ -126,16 +129,6 @@ class Progress(db.Model):
     submission = db.relationship('Submission', back_populates='progresses')
 
 
-# ------------------ LEARNING ------------------
-class Learning(db.Model):
-    __tablename__ = 'learning'
-    LearnerID = db.Column(db.Integer, primary_key=True)
-    StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'))
-    Completed = db.Column(db.Boolean, default=False)
-
-    student = db.relationship('Student', back_populates='learning')
-
-
 # ------------------ XP ------------------
 class XP(db.Model):
     __tablename__ = 'xp'
@@ -144,7 +137,3 @@ class XP(db.Model):
     XPLevel = db.Column(db.Integer)
 
     student = db.relationship('Student', back_populates='xp')
-
-def password_hash(password):
-    # Placeholder for password hashing logic
-    return password  # Replace with actual hashing in production

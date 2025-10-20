@@ -1,49 +1,54 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, SelectField, DateField
-from wtforms.validators import DataRequired, Email, Length, Optional, ValidationError
-from datetime import date
+from flask import render_template, request, redirect, url_for, flash, session
+from werkzeug.security import generate_password_hash
+from app import app, db
+from models import Account_Recovery
 
-class RegisterForm(FlaskForm):
-    username = StringField('Full Name', validators=[DataRequired(), Length(min=2, max=100)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    phone = StringField('Phone Number', validators=[DataRequired(), Length(min=7, max=20)])
-    dob = DateField('Date of Birth', validators=[DataRequired()], format='%Y-%m-%d')
-    address = StringField('Address', validators=[DataRequired(), Length(min=5, max=200)])
-    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
-    role = SelectField(
-        'Select Role',
-        choices=[
-            ('student', 'Student'),
-            ('tutor', 'Tutor'),
-            ('admin', 'Admin')
-        ],
-        validators=[DataRequired()]
-    )
-    parent_email = StringField('Parent Email', validators=[Optional(), Email()])
-    submit = SubmitField('Register')
+@app.route('/security_questions', methods=['GET', 'POST'])
+def security_questions():
+    # List of available questions (same as in the form)
+    question_list = [
+        "What was the name of your first pet?",
+        "What is your mother’s maiden name?",
+        "What was the model of your first car?",
+        "What city were you born in?",
+        "What is your favorite teacher’s name?"
+    ]
 
-    def validate(self, extra_validators=None):
-        # Run built-in validation first
-        if not super().validate(extra_validators):
-            return False
+    if request.method == 'POST':
+        user_email = session.get('user_email')  # assuming the user is logged in
+        if not user_email:
+            flash("You must be logged in to set up recovery questions.", "warning")
+            return redirect(url_for('login'))
 
-        today = date.today()
-        dob = self.dob.data
-        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        selected_questions = []
+        answers = []
 
-        # Student under 18 → parent email required
-        if self.role.data == 'student' and age < 18 and not self.parent_email.data:
-            self.parent_email.errors.append('Parent email is required for students under 18.')
-            return False
+        # Loop through all 5 possible form fields
+        for i in range(1, 6):
+            q_text = request.form.get(f'question{i}')
+            ans = request.form.get(f'answer{i}')
 
-        #  Tutor under 18 → not allowed
-        if self.role.data == 'tutor' and age < 18:
-            self.dob.errors.append('Tutors must be at least 18 years old.')
-            return False
+            # Only include filled ones
+            if q_text and ans:
+                selected_questions.append(q_text)
+                answers.append(ans)
 
-        # Admin under 18 → not allowed
-        if self.role.data == 'admin' and age < 18:
-            self.dob.errors.append('Admins must be at least 18 years old.')
-            return False
+        # Must have exactly 3 selected questions
+        if len(selected_questions) != 3:
+            flash("Please select and answer exactly 3 security questions.", "danger")
+            return redirect(url_for('security_questions'))
 
-        return True
+        # Store questions and hashed answers
+        for q_text, ans in zip(selected_questions, answers):
+            entry = Account_Recovery(
+                UserEmail=user_email,
+                QuestionText=q_text,
+                AnswerHash=generate_password_hash(ans)
+            )
+            db.session.add(entry)
+
+        db.session.commit()
+        flash("Your security questions have been saved successfully!", "success")
+        return redirect(url_for('dashboard'))
+
+    return render_template('security_questions.html', question_list=question_list)

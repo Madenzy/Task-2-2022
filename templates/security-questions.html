@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block head %}Security Questions{% endblock %}
+
+{% block body %}
+<link rel="stylesheet" href="/static/Css/security-questions.css">
+<div class="security-questions">
+    <h2>Set Up Security Questions</h2>
+    <h3>Please choose and answer <strong>three</strong> security questions for account recovery.</h3>
+    
+    <form method="POST" action="{{ url_for('security_questions') }}">
+        <div class="questions">
+            {% set question_list = [
+                "What was the name of your first pet?",
+                "What is your mother’s maiden name?",
+                "What was the model of your first car?",
+                "What city were you born in?",
+                "What is your favorite teacher’s name?"
+            ] %}
+
+            {% for i in range(1, 4) %}
+            <div class="question-block">
+                <label for="question{{ i }}">Security Question {{ i }}:</label>
+                <select id="question{{ i }}" name="question{{ i }}">
+                    <option value="" disabled selected>Select a question</option>
+                    {% for q in question_list %}
+                    <option value="{{ q }}">{{ q }}</option>
+                    {% endfor %}
+                </select>
+                <input type="text" id="answer{{ i }}" name="answer{{ i }}" placeholder="Your Answer">
+            </div>
+            {% endfor %}
+            <button type="submit">Save Questions</button>
+        </div>
+
+
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const selects = document.querySelectorAll('select');
+    const inputs = document.querySelectorAll('input[type="text"]');
+
+    function updateOptions() {
+        // Get all selected question values
+        const selectedValues = Array.from(selects)
+            .map(s => s.value)
+            .filter(v => v !== "");
+
+        // Disable selected options in other dropdowns
+        selects.forEach(select => {
+            const currentValue = select.value;
+            Array.from(select.options).forEach(option => {
+                if (option.value === "") return;
+                option.disabled = selectedValues.includes(option.value) && option.value !== currentValue;
+            });
+        });
+
+        // Count how many questions are chosen
+        const chosenCount = selectedValues.length;
+
+        // Allow only 3 questions to be active at a time
+        selects.forEach((select, index) => {
+            const input = inputs[index];
+            const isSelected = select.value !== "";
+
+            // Enable input only if question is chosen
+            input.disabled = !isSelected;
+
+            // Disable further selection if already picked 3
+            if (chosenCount >= 3 && !isSelected) {
+                select.disabled = true;
+            } else {
+                select.disabled = false;
+            }
+        });
+    }
+
+    selects.forEach(select => {
+        select.addEventListener('change', updateOptions);
+    });
+});
+</script>
+{% endblock %}
